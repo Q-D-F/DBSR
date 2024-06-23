@@ -1,0 +1,59 @@
+#### general settings
+name: DDSRx2_setting1
+use_tb_logger: true
+model: blind
+distortion: sr
+scale: 2
+rrdb_ckpt: /home/zmdz/DDSR-main/DDSR-main/RRDB_LR_encoder/experiments/DCLS/medical_DDLS_setting1_x2/models/latest_G.ckpt #Pretrained RRDB encoder
+gpu_ids: [1]
+
+#### datasets
+datasets:
+  train:
+    name: DIV2K
+    mode: LQGTker
+    dataroot_GT: /home/zmdz/DDSR-main/DDSR-main/DIV2K/DIV2K_HR_source.lmdb
+    dataroot_LQ: /home/zmdz/DDSR-main/DDSR-main/DIV2K/Medical_HR_bic/Bic/Bic_x2.lmdb
+
+    use_shuffle: true
+    n_workers: 8  # per GPU
+    batch_size: 32
+    GT_size: 64
+    LR_size: 32
+    use_flip: true
+    use_rot: true
+    color: RGB
+  val:
+    name: Set5
+    mode: LQGT
+    dataroot_GT: /home/zmdz/DDSR-main/DDSR-main/DIV2K/Axial_source.lmdb
+    dataroot_LQ: /home/zmdz/DDSR-main/DDSR-main/DIV2K/Axial_HR_bic/Bic/Bic_x2.lmdb
+
+#### path
+path:
+  pretrain_model_G: ~
+  strict_load: false
+  resume_state: ~
+
+#### training settings: learning rate scheme, loss
+train:
+  lr: !!float 2e-4
+  lr_scheme: MultiStepLR
+  beta1: 0.9
+  beta2: 0.99
+  niter: 90000
+  warmup_iter: -1  # no warm up
+  lr_steps: 100000
+  lr_gamma: 0.5
+  eta_min: !!float 1e-7
+
+  pixel_criterion: l1
+  pixel_weight: 1.0
+
+  manual_seed: 0
+  val_freq: !!float 2e3
+
+#### logger
+logger:
+  print_freq: 20
+  save_checkpoint_freq: !!float 1e3
